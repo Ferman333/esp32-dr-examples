@@ -1,6 +1,13 @@
-/**********
-GPS + LCD screen
-*********/
+/**
+* GPS + LCD screen
+*
+* Programa para leer datos de un módulo GPS Neo-6m, y mostrarlos en una pantalla LCD.
+* version: 1.0
+*
+* Se requiere de una placa de desarrollo (Arduino, Esp32, Raspberry, etc.), el módulo GPS Neo-6m, y una pantalla LCD como la 1602A de Hitoshi, además de un botón. Este programa lee datos del módulo GPS y los muestra en la pantalla LCD, sin embargo, por limitaciones de espacio, los muestra uno a uno, permitiendo al usuario cambiar la información mostrada con un botón que intercambia entre distintos modos. En el modo 0 se muestran la fecha y hora, en modo 1 se muestran las coordenadas (lat, long), en modo 2 se muestra la altitud en msnm, en modo 3 se muestra la velocidad de movimiento, en modo 4 se muestra el HDOP, y en modo 5 se muestra la cantidad de satélites visibles. Al llegar a 6 el contador de modo se resetea a 0 para mostrar nuevamente fecha y hora.
+*/
+
+
 #include <LiquidCrystal_I2C.h>
 #include <TinyGPS++.h>
 
@@ -33,6 +40,7 @@ byte circ[8] = {
 };
 
 
+
 void setup(){
   // Serial Monitor
   Serial.begin(115200);
@@ -56,6 +64,7 @@ void setup(){
   Serial.print("Counter: ");
   Serial.println(mode);
 }
+
 
 
 

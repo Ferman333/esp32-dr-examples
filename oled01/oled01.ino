@@ -1,3 +1,7 @@
+/**
+* Ejemplo básico de escritura y dibujo en una pantalla Oled. Se ha usado un Esp32-C3 Supermini con una Oled incluida de 72x40 (que en realidad resultó ser de 70x40).
+*/
+
 //#include <MUIU8g2.h>
 #include <U8g2lib.h>
 //#include <U8x8lib.h>

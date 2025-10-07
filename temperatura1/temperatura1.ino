@@ -1,3 +1,7 @@
+/**
+* Ejemplo básico de la librería DallasTemperature para mostrar las temperaturas leídas por un DS18B20 en serial.
+*/
+
 #include <OneWire.h> 
 #include <DallasTemperature.h>
 /********************************************************************/

@@ -1,5 +1,5 @@
 /*********
- Conexión mediante AP (access point)
+ Conexión mediante AP (access point) WiFi para controlar el encendido de un Led desde el celular, usando un Esp32.
 *********/
 
 #include "credentials.h" //File with the custom credentials of your AP

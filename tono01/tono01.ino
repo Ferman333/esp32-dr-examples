@@ -1,3 +1,7 @@
+/**
+* Programa para probar la generación de tonos con ayuda de un buzzer o bocina pasiva.
+*/
+
 #define AUD 8
 
 const int c[5]={131,262,523,1046,2093}; // Do (4 escalas)

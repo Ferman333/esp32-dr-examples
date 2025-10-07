@@ -1,5 +1,9 @@
+/**
+* Programa para probar una pantalla de cristal líquido LCD con el controlador HD44780U de Hitachi. Esto sólo pretende mostrar la codificación de texto Unicode y la creación de caracteres personalizados. Toma en cuenta que hay 2 versiones de la memoria ROM para los Hitachi: la A00 que sólo trae algunos caracteres katakana y las letras latinas básicas, y la A02 que cambia los katakana por letras latinas extendidas (con diacríticos para soporte de varios idiomas europeos), griegas y cirílicas. Esto sólo ha sido probado en el chip con la ROM A00.
+*/
+
+
 #include <LiquidCrystal_I2C.h>
-//#include <characters.h>
 
 
 //LCD_I2 object (liquid crystal screen)
@@ -47,8 +51,8 @@ void loop(void)
  String txt1="Hola niños";
  String txt2= "I💚U";
 
- txt1.replace("ñ", String((char) 0xEE) );
- txt2.replace("💚", String((char) 0) );
+ txt1.replace("ñ", String((char) 0xEE) ); //In the A00 ROM, replace the 'ñ' character by the 0x22 that corresponds to an "n" with macron
+ txt2.replace("💚", String((char) 0) ); // Use the custom character at position ROM 0
 
  lcd.setCursor(3, 0); // Set the cursor on the third column and first row.
  lcd.print(txt1);

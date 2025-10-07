@@ -1,3 +1,7 @@
+/**
+* Este programa crea un AP Wifi con un server para interactuar con el microcontrolador desde un celular, para escribir (y en un futuro dibujar) en una pantalla Oled. Se ha usado el micro Esp32-C3 supermini con pantalla Oled incluida de 72x40 (que en realidad resultó ser de 70x40).
+*/
+
 #include "credentials.h" //File with custom "ssid" and "password" for the AP
 #include <WiFi.h>
 #include <WebServer.h>
@@ -71,8 +75,8 @@ String html02= R"rawliteral(
 
 int width = 70;
 int height = 40;
-int xOffset = 30; // = (132-w)/2
-int yOffset = 24; // = (64-h)/2
+int xOffset = 30; // = (132-w)/2 : X coord. of the left-upper corner
+int yOffset = 24; // = (64-h)/2 : Y coord. of the left-upper corner
 
 
 

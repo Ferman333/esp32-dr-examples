@@ -1,4 +1,7 @@
+/**
+* Intento básico de osciloscopio, el cual se basa en leer los valores de voltaje en las entradas analógicas del controlador, y luego visualizarlas en PlotSerial. Sin embargo, aún falta demasiado por agregar, como la posibilidad de ajustar las escalas de tiempo, voltaje, etc.
 
+*/
 
 //Pines de entrada
 const int ch1=14, ch2=15, ch3=16;

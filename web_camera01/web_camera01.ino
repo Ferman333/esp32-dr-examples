@@ -1,3 +1,7 @@
+/**
+* Ejemplo básico de streaming de video desde un Esp32-Cam conectando el microcontrolador a WiFi. Probado con los chips de cámara OV2640 y OV3660.
+*/
+
 #include "credentials.h" //File with the "ssid" and "password" credentials of your WiFi
 #include "esp_camera.h"
 #include <WiFi.h>

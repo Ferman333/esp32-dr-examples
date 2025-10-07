@@ -1,3 +1,7 @@
+/**
+* Programa para probar las funciones básicas de lectura y escritura para tarjetas MIFARE_ISO14443A mediante NFC, usando el módulo PN532.
+*/
+
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_PN532.h>

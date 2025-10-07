@@ -1,3 +1,9 @@
+/**
+* Este programa crea un AP Wifi con un server para interactuar con el microcontrolador desde el celular, y cambiar el texto en una pantalla LCD con el chip HD44780U de Hitachi. Toma en cuenta que hay 2 versiones de la memoria ROM para los Hitachi: la A00 que sólo trae algunos caracteres katakana y las letras latinas básicas, y la A02 que cambia los katakana por letras latinas extendidas (con diacríticos para soporte de varios idiomas europeos), griegas y cirílicas. Esto sólo ha sido probado en el chip con la ROM A00, lo cual ha obligado a cambiar algunos caracteres del español por otras letras para que se muestren en pantalla (ejemplo, las letras acentuadas se cambian por su respectiva vocal sin acento).
+
+*/
+
+
 #include "credentials.h" //File with custom "ssid" and "password" for the AP
 #include <WiFi.h>
 #include <WebServer.h>
@@ -59,7 +65,6 @@ const uint8_t utf8_0xD1[8] = { 0b01101, 0b10110, 0b00000, 0b10001, 0b11001, 0b10
 //Ü symbol
 const uint8_t utf8_0xDC[8] = { 0b01010, 0b00000, 0b10001, 0b10001, 0b10001, 0b10001, 0b10001, 0b01110 };
 
-//Heart symbol
 //Heart symbol
 uint8_t heart[8] = {
   0b00000000,

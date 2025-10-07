@@ -1,5 +1,6 @@
 /*********
-  Modified version from the original:
+  Programa para controlar el encendido de un led con el Esp32 desde un celular, usando la conexión WiFi.
+  Modificado desde el original:
   Rui Santos & Sara Santos - Random Nerd Tutorials
   Complete project details at https://RandomNerdTutorials.com/getting-started-esp32-c3-super-mini/
   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files.

@@ -1,6 +1,8 @@
-/**********
-  WiFi server + GPS
-*********/
+/**
+*  WiFi server + GPS
+*
+* Este programa crea un punto de acceso Wifi en el Esp32, que permita ingresar a una interfaz web que muestre los valores devueltos por un módulo GPS. (Aún trabajando en este programa).
+*/
 
 //For the Wifi connection
 #include "credentials.h" //File with custom network credentials

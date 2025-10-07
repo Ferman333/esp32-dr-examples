@@ -1,3 +1,7 @@
+/**
+* Este programa pretende medir la distancia a un cierto objeto usando un sensor de ultrasonido, y luego mostrarla en una pantalla LCD. Aún en construcción...
+*/
+
 #include <LiquidCrystal_I2C.h>
 
 #define TRIG 12

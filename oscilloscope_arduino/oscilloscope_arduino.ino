@@ -1,3 +1,8 @@
+/**
+* Project of a full oscilloscope for Arduino (tested in Arduino Nano and Uno). Please cite the author if you can find they (i don't remember the source).
+*/
+
+
 // 28/05/2017 => bug v1.5 => qdo aumenta 1 canal dá erro na serial (disabling serial)
 // 22/05/2017 => versão 1.5 => dynamic buffer - 1ch=400pt/ch, 2chs=200pt/ch, 3chs=130pt/ch, 4chs=100pt/ch
 // 21/01/2017 => versão 1.4 => melhorar o trigger: informar valor e sentido (subindo/descendo)

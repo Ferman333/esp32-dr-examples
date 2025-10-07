@@ -1,3 +1,7 @@
+/**
+* Este programa lee la temperatura con un sensor DS18B20, y luego la muestra en una pantalla LCD.
+*/
+
 #include <OneWire.h>
 #include <LiquidCrystal_I2C.h>
 #include <DallasTemperature.h>
@@ -58,7 +62,7 @@ void loop(void)
  // call sensors.requestTemperatures() to issue a global temperature 
  // request to all devices on the bus 
  sensors.requestTemperatures(); // Send the command to get temperature readings 
-
+ 
  lcd.setCursor(2, 0); // Set the cursor on the third column and first row.
  lcd.print("Temperatura:");
  lcd.setCursor(4,1);

@@ -1,3 +1,7 @@
+/**
+* Programa para probar un módulo Sim800L para tarjetas SIM. La conexión entre el microcontrolador y el módulo funciona, pero no se pudo probar más debido a la falta de conexión para las redes 2G (ahora obsoletas).
+*/
+
 #define RXD 20
 #define TXD 21
 
