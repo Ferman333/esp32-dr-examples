@@ -30,7 +30,14 @@ String html01= R"rawliteral(
 <title>Oled screen-ESP32 Web server</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { background-color: #666; }
+body {
+  background-color: #666;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
 
 textarea {
   background-color: #333;
@@ -43,20 +50,43 @@ p {
   font: normal normal 24px calligra, verdana;
 }
 
+button {
+  width: 80px;
+  height: 35px;
+  background-color: #00AA50;
+  color: white;
+  font-size: 18px;
+}
 </style>
 </head>
+
 <body>
 <p>Escribe algo...</p>
-
-<form method="GET" action="/send_text">
-<textarea rows="4" cols="8" name="text01">
+<textarea rows="4" cols="8" name="text01" id="text01">
 )rawliteral";
 
 String html02= R"rawliteral(
 </textarea><br>
-<input type="submit" />
-</form>
+<button id="button01" onclick="send_text();">Enviar</button>
 
+<script>
+function send_text() {
+  var txt_area= document.getElementById("text01");
+  var xhr= new XMLHttpRequest();
+  
+  xhr.open("POST", "/send_text", true);
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+  
+  xhr.onreadystatechange = function() {
+    if(xhr.readyState===4 && xhr.status===200) {
+      console.log(xhr.responseText);
+      txt_area.value = xhr.responseText;
+    }
+  };
+  
+  xhr.send("text01="+ encodeURIComponent(txt_area.value));
+}
+</script>
 </body>
 </html>
 )rawliteral";
@@ -134,7 +164,7 @@ void handleText() {
     printSplitString(textContent, 4);
     u8g2.sendBuffer();
   }
-  handleRoot();
+  server.send(200, "text/plain", textContent);
 }
 
 
@@ -150,7 +180,7 @@ void setup(void)
     
     // Set up the web server to handle different routes
     server.on("/", handleRoot);
-    server.on("/send_text", HTTP_GET, handleText);
+    server.on("/send_text", handleText);
     
     // Start the web server
     server.begin();
