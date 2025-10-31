@@ -24,10 +24,18 @@ String textContent ="";
 String html01= R"rawliteral(
 <html>
 <head>
+<meta charset="UTF-8">
 <title>LCD screen-ESP32 Web server</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { background-color: #555; }
+body {
+  background-color: #555;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
 
 textarea {
   background-color: #0033FF;
@@ -40,20 +48,43 @@ p {
   font: normal normal 18px calligra, verdana;
 }
 
+button {
+  width: 80px;
+  height: 35px;
+  background-color: #00AA50;
+  color: white;
+  font-size: 18px;
+}
 </style>
 </head>
 <body>
 <p>Escribe algo...</p>
 
-<form method="GET" action="/send_text">
-<textarea rows="2" cols="16" name="text01">
+<textarea rows="2" cols="16" name="text01" id="text01">
 )rawliteral";
 
 String html02= R"rawliteral(
 </textarea><br>
-<input type="submit" />
-</form>
+<button id="button01" onclick="send_text();">Enviar</button>
 
+<script>
+//Send text to server when button is clicked
+function send_text() {
+  var txt_area= document.getElementById("text01");
+  var xhr=new XMLHttpRequest();
+  
+  xhr.open('POST', "/send_text", true);
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+  
+  xhr.onreadystatechange = function() {
+    if(xhr.readyState===4 && xhr.status===200) {
+      console.log(xhr.responseText);
+      txt_area.value = xhr.responseText;
+    }
+  };
+  xhr.send("text01="+ encodeURIComponent(txt_area.value));
+}
+</script>
 </body>
 </html>
 )rawliteral";
@@ -114,6 +145,26 @@ void convertSpanishText(String& str) {
 }
 
 
+//Decode an URI encoded text to UTF-8
+String uriToUTF8(String str) {
+  String out="";
+  for(uint16_t i=0; i<str.length(); i++) {
+    if(str.charAt(i) == (char)0xC3) { //If a character is u+C3, then %C3%XY must be converted into u+(XY+0x40)
+      out+= String((char) (str.charAt(i+1) + 0x40));
+      i++; //Pass to the next character
+    }
+    else if(str.charAt(i) == (char)0xC2) { //If a character is u+C2, then %C2%XY must be converted into u+XY
+      out+= String(str.charAt(i+1));
+      i++; //Pass to the next character
+    }
+    else {
+      out+= String(str.charAt(i)); //Standard character
+    }
+  }
+  return out;
+}
+
+
 //Splits an input text in lines, and prints every line in the LCD screen
 void printSplitString(String txt, uint8_t rows) {
   int8_t startIndex =0;
@@ -161,9 +212,9 @@ void handleText() {
 
     //Print on screen
     lcd.clear();
-    printSplitString(textContent, 2);
+    printSplitString(uriToUTF8(textContent), 2);
   }
-  handleRoot();
+  server.send(200, "text/plain", textContent);
 }
 
 
@@ -181,7 +232,7 @@ void setup(void)
   
   // Set up the web server to handle different routes
   server.on("/", handleRoot);
-  server.on("/send_text", HTTP_GET, handleText);
+  server.on("/send_text", handleText);
   //server.on("/off", HTTP_GET, handleGPIOOff);
   
   // Start the web server
@@ -193,8 +244,8 @@ void setup(void)
   lcd.init();
   lcd.backlight();
   Serial.println("Screen started");
-  lcd.createChar(6, (uint8_t*) utf8_0xD1); //Create Ñ symbol
-  lcd.createChar(7, (uint8_t*) utf8_0xDC); //Create Ü symbol
+  //lcd.createChar(6, (uint8_t*) utf8_0xD1); //Create Ñ symbol
+  //lcd.createChar(7, (uint8_t*) utf8_0xDC); //Create Ü symbol
 } 
 
 
