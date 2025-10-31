@@ -44,6 +44,36 @@ button {
   cursor: pointer;
 }
 
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 1vw;
+}
+
+/* Sizes for small screens */
+@media (max-width: 1080px) {
+
+button {
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, rgb(0, 255, 44) 70%, rgb(255, 255, 64));
+  border: 0px;
+  cursor: pointer;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+}
+
 .up {
   display: inline-block;
   width: 100%;
@@ -67,13 +97,6 @@ button {
   gap: 40px;
 }
 
-.buttons {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  gap: 1vw;
-}
 
 .bar-interval {
   width: 30px;
