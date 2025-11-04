@@ -14,6 +14,11 @@
 #define SDA_OLED 5
 #define CLK_OLED 6
 
+//Oled sizes
+const uint8_t width = 70;
+const uint8_t height = 40;
+const uint8_t xOffset = 30; // = (132-w)/2 : X coord. of the left-upper corner
+const uint8_t yOffset = 24; // = (64-h)/2 : Y coord. of the left-upper corner
 
 // Create a web server object
 WebServer server(80);
@@ -104,9 +109,6 @@ canvas {
 <div class="panel" id="text-interface">
 <p>Escribe algo...</p>
 <textarea rows="4" cols="8" name="text01" id="text01">
-)rawliteral";
-
-String PROGMEM html02= R"rawliteral(
 </textarea>
 <button id="button01" onclick="send_text();">Enviar</button>
 </div>
@@ -118,6 +120,7 @@ String PROGMEM html02= R"rawliteral(
   <div class="panel">
     <div class="frame" style="background:white; border-style: solid;" onclick="change_color('white');" id="white-frame"></div>
     <div class="frame" style="background:black;" onclick="change_color('black');" id="black-frame"></div>
+    <div class="frame" style="background:black; color:white;" onclick="clear_img();" id="clear-frame">C</div>
   </div>
 </div>
 <button id="button01" onclick="send_img();">Enviar</button>
@@ -132,6 +135,7 @@ var color="white";
 var X0, Y0;
 var W, H;
 
+var text="";
 var BMP_img = []; //Array for the BMP image
 
 
@@ -141,7 +145,7 @@ function send_text() {
   var txt_area= document.getElementById("text01");
   var xhr= new XMLHttpRequest();
   
-  xhr.open("POST", "/send_text", true);
+  xhr.open("POST", "/get_text", true);
   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
   
   xhr.onreadystatechange = function() {
@@ -158,7 +162,7 @@ function send_text() {
 function send_img() {
   var xhr= new XMLHttpRequest();
   
-  xhr.open("POST", "/send_img", true);
+  xhr.open("POST", "/get_img", true);
   xhr.setRequestHeader('Content-Type', 'application/json');
   
   xhr.onreadystatechange = function() {
@@ -170,22 +174,51 @@ function send_img() {
   xhr.send(JSON.stringify(BMP_img));
 }
 
+//Get W,H, text and img values from server
+function get_values() {
+  var xhr= new XMLHttpRequest();
+  
+  xhr.open("POST", "/send_values", true);
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+  
+  xhr.onreadystatechange = function() {
+    if(xhr.readyState===4 && xhr.status===200) {
+      console.log("Data received: "+xhr.responseText);
+      
+      //Get data from server
+      var data= JSON.parse(xhr.responseText);
+      
+      W = data.width; H = data.height;
+      W*=3; H*=3; //Multiply by 3 to have a bigger canvas
+      text = data.text;
+      
+      //Resize canvas
+      cnv.style.width= W; cnv.style.height= H;
+      cnv.width= W; cnv.height= H;
+      
+      //Write text in textarea
+      document.getElementById("text01").value = text;
+      
+      //Fill canvas background
+      ctx.fillStyle= "black";
+      ctx.fillRect(0,0, W,H);
+      
+      for(var k=0; k<Math.ceil(W/24)*H/3; k++) BMP_img[k]=0; //Fill the image array with zeros
+    }
+  };
+  
+  xhr.send("data=0");
+}
+
 
 // ******** Listeners *********
-addEventListener("load", ()=> {
-                              W= cnv.width;
-                              H= cnv.height;
-                              ctx.fillStyle= cnv.style.background;
-                              ctx.fillRect(0,0, W,H);
-                              
-                              for(k=0; k<(W/24)*H/3; k++) BMP_img[k]=0; //Fill the image array with zeros
-                              });
+addEventListener("load", get_values);
 
 addEventListener("mouseup", end_draw);
 addEventListener("touchend", end_draw);
 
-cnv.addEventListener("mousedown", start_draw);
-cnv.addEventListener("touchstart", start_draw);
+cnv.addEventListener("mousedown", (e)=> {start_draw(e);});
+cnv.addEventListener("touchstart", (e)=> {start_draw(e);});
 
 cnv.addEventListener("mousemove", (e)=> {draw(e);});
 cnv.addEventListener("touchmove", (e)=> {draw(e);}, {passive:false});
@@ -210,6 +243,13 @@ function change_color(col) {
     document.getElementById("white-frame").style.borderStyle = "none";
     document.getElementById("black-frame").style.borderStyle = "solid";
   }
+}
+
+//Clear the image
+function clear_img() {
+  for(var k=0; k<BMP_img.length; k++) BMP_img[k] = 0;
+  ctx.fillStyle= "black";
+  ctx.fillRect(0,0,W,H);
 }
 
 //Paint a single pixel at (absX,absY) coordinates, where the coordinates are absolute (i.e., the window client coords.)
@@ -238,8 +278,13 @@ function draw(e) {
 }
 
 //Start the draw-mode
-function start_draw() {
+function start_draw(e) {
   cnv_pressed= true;
+  
+  var x= e.type=="mousedown"? e.clientX : e.touches[0].clientX;
+  var y= e.type=="mousedown"? e.clientY : e.touches[0].clientY;
+  
+  paintPixel(x,y);
 }
 
 //End the draw-mode
@@ -293,15 +338,11 @@ function show_BMP() {
   0b00000000
 };*/
 
-const uint8_t width = 70;
-const uint8_t height = 40;
-const uint8_t xOffset = 30; // = (132-w)/2 : X coord. of the left-upper corner
-const uint8_t yOffset = 24; // = (64-h)/2 : Y coord. of the left-upper corner
-
-uint8_t BMP_img[height * ((width>>3) + ((width & 7)==0? 0:1))]; //Array for the BMP image
+//Array for the BMP image
+uint8_t BMP_img[height * ((width>>3) + ((width & 7)==0? 0:1))];
 
 
-void decodeJSON(String str, uint8_t* arr) {
+void deserializeArray(String str, uint8_t* arr) {
   int16_t startIndex =1; //Start at 1 to eliminate the '['
   int16_t endIndex= str.indexOf(',');
   size_t i=0;
@@ -353,8 +394,15 @@ void printSplitString(String txt, uint8_t rows) {
 
 void handleRoot() {
   //Send the HTML
-  server.send(200, "text/html", html01+textContent+html02);
+  server.send(200, "text/html", html01);
   
+}
+
+
+void handleStart() {
+  String start_data= "{\"width\":"+String(width)+ ",\"height\":"+String(height)+ ",\"text\":\""+textContent +"\"}";
+  start_data.replace("\n", "\\n");
+  server.send(200,"text/plain", start_data);
 }
 
 
@@ -379,7 +427,7 @@ void handleText() {
 void handleImg() {
     if (server.args() > 0) {
         // Obtiene el contenido de la solicitud
-        decodeJSON(server.arg(0), BMP_img); // Primer argumento
+        deserializeArray(server.arg(0), BMP_img); // Primer argumento
 
         u8g2.clearBuffer();
         u8g2.drawBitmap(xOffset, yOffset, (width>>3)+ (width &7 == 0? 0:1), height, (const uint8_t*) BMP_img);
@@ -402,8 +450,9 @@ void setup(void)
     
     // Set up the web server to handle different routes
     server.on("/", handleRoot);
-    server.on("/send_text", handleText);
-    server.on("/send_img", handleImg);
+    server.on("/send_values", handleStart);
+    server.on("/get_text", handleText);
+    server.on("/get_img", handleImg);
     
     // Start the web server
     server.begin();
