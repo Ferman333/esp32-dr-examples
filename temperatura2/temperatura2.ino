@@ -7,8 +7,8 @@
 #include <DallasTemperature.h>
 
 
-// Data wire is plugged into pin 2 on the Arduino 
-#define ONE_WIRE_BUS 2 
+// Data wire is plugged into pin 10 on the Esp32 
+#define ONE_WIRE_BUS 10
 
 
 // Setup a oneWire instance to communicate with any OneWire devices  
@@ -18,40 +18,23 @@ OneWire oneWire(ONE_WIRE_BUS);
 // Pass our oneWire reference to Dallas Temperature. 
 DallasTemperature sensors(&oneWire);
 
-
 //LCD_I2 object (liquid crystal screen)
 LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 16, 2);
-
-
-//Degree symbol
-byte circ[8] = {
-  0b00011100,
-  0b00010100,
-  0b00011100,
-  0b00000000,
-  0b00000000,
-  0b00000000,
-  0b00000000,
-  0b00000000
-};
-
 
 
 
 void setup(void) 
 { 
  // start serial port 
- //Serial.begin(9600); 
- //Serial.println("Dallas Temperature IC Control Library Demo"); 
+ Serial.begin(9600); 
+ Serial.println("Dallas Temperature IC Control Library Demo"); 
  
  // Initiate the LCD:
   lcd.init();
   lcd.backlight();
-
-  lcd.createChar(0,circ);
  
- // Start up the library 
- sensors.begin(); 
+  // Start up the library 
+  sensors.begin(); 
 } 
 
 
@@ -66,10 +49,10 @@ void loop(void)
  lcd.setCursor(2, 0); // Set the cursor on the third column and first row.
  lcd.print("Temperatura:");
  lcd.setCursor(4,1);
- lcd.print(String(sensors.getTempCByIndex(0), 2));
- lcd.write((byte) 0);
+ lcd.print(String(sensors.getTempCByIndex(0), 2)); //Get and write temperature
+ lcd.write((char)0xDF); //Degree symbol in Hitachi A-00 ROM
  lcd.print("C");
- 
+ Serial.println("Temp.: "+ String(sensors.getTempCByIndex(0), 2)+ " deg"); //Show temperature in Serial
  
  delay(1000); //Request temperatures once at each second
 } 
