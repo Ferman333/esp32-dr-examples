@@ -1,14 +1,22 @@
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
+#include <LiquidCrystal_I2C.h>
 
+//MPU6050 object
 Adafruit_MPU6050 mpu;
+//LCD_I2 object (liquid crystal screen)
+LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 16, 2);
 
 void setup() {
   Serial.begin(115200);
-  while (!Serial)
-    delay(10);
+  //while (!Serial)
+  //  delay(10);
+
+  // Initiate the LCD:
+  lcd.init();
+  lcd.backlight();
   
-  // Try to initialize!
+  // Try to initialize MPU sensor!
   if (!mpu.begin(0x68)) {
     Serial.println("Failed to find MPU6050 chip");
     while (1) {
@@ -31,7 +39,7 @@ void loop() {
   // Get sensors' values
   sensors_event_t a, gy, temp;
   mpu.getEvent(&a, &gy, &temp);
-
+  
   Serial.print("Aceleracion X: ");  Serial.print(a.acceleration.x);
   Serial.print(", Y: ");  Serial.print(a.acceleration.y);
   Serial.print(", Z: ");  Serial.print(a.acceleration.z);
@@ -41,9 +49,18 @@ void loop() {
   Serial.print(", Y: ");  Serial.print(gy.gyro.y);
   Serial.print(", Z: ");  Serial.print(gy.gyro.z);
   Serial.println(" rad/s");
-
+  
   Serial.print("Temperatura: "); Serial.print(temp.temperature); Serial.println(" degC");
-
+  
   Serial.println("");
-  delay(500);
+  
+  //Write in the LCD
+  lcd.setCursor(2,0);
+  lcd.print("Temperatura:");
+  lcd.setCursor(4,1);
+  lcd.print(String(temp.temperature, 2)); //Write temperature
+  lcd.write((char) 0xDF); //Degree symbol in Hitachi A-00 ROM
+  lcd.print("C");
+  
+  delay(1000);
 }
